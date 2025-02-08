@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "94514647137",
+    "project_id": "first-app-1f0b7",
+    "storage_bucket": "first-app-1f0b7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:94514647137:android:ae6d579c8ff6fc9f815a20",
+        "android_client_info": {
+          "package_name": "com.example.audioanalysis"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5_LoK_o5ANFkk3KAvwApVRSrgFL4SWKE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:94514647137:android:eb5ebe3089cec31b815a20",
+        "android_client_info": {
+          "package_name": "com.example.firebase_tutorial_firstapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5_LoK_o5ANFkk3KAvwApVRSrgFL4SWKE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

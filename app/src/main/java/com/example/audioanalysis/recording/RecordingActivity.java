@@ -43,7 +43,7 @@ public class RecordingActivity extends AppCompatActivity {
         super.onStart();
 
         initializeUI();
-        audioRecorderManager.createRequiredDirectories(); // Create recordings and current_recordings directories if not already created.
+        audioRecorderManager.createRequiredDirectories(); // Create recordings and current_recordings directories if not already created
 
     }
 

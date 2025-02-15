@@ -1,15 +1,33 @@
+# Ignore IDE-specific files
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+.idea/
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# Ignore OS-specific junk files
+.DS_Store  # macOS
+Thumbs.db  # Windows
+ehthumbs.db  # Windows
+Desktop.ini  # Windows
+
+# Ignore Gradle files
+.gradle/
+.gradle/**/*
+/build/
+captures/
+.externalNativeBuild/
+.cxx/
 local.properties
+
+# Ignore Firebase sensitive files (remove this if you want to push it)
+app/google-services.json
+
+# Ignore VS Code settings (if using VS Code)
+.vscode/
+
+# Keep Gradle Wrapper but ignore logs
+!gradle/wrapper/gradle-wrapper.jar

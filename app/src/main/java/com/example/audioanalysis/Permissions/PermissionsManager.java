@@ -1,158 +1,140 @@
+//package com.example.audioanalysis.Permissions;
+
+//import android.Manifest;
+//import android.app.Activity;
+//import android.content.Context;
+//import android.content.pm.PackageManager;
+//
+//import androidx.core.app.ActivityCompat;
+//import androidx.core.content.ContextCompat;
+//
+//public class PermissionsManager {
+//    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 100;  // Request code for audio permission
+//    private boolean permissionToRecordAudio = false;  // Flag to track permission status
+//
+//
+//    private static final int REQUEST_READ_PHONE_STATE_PERMISSION = 200;
+//    private boolean permissionToReadPhoneState = false;
+//
+//    Context context;
+//    Activity activity;
+//    public PermissionsManager(Activity activity) {
+//        this.activity = activity;
+//        this.context = activity.getApplicationContext();
+//    }
+//    public boolean isPermissionGranted(String permission) {
+//        /*
+//        Checks if a specific permission is granted.
+//        @param permission: The permission to check.
+//        @return true if granted, false otherwise.
+//        */
+//        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+//    }
+//
+//    public void requestAudioPermissionIfNeeded() {
+//        /*
+//        Checks if phone state permission is granted. If not, requests permission.
+//        */
+//        permissionToRecordAudio = isPermissionGranted(Manifest.permission.RECORD_AUDIO);
+//        if (!permissionToRecordAudio) {
+//            // Permission not granted, so ask for permission
+//            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
+//        }
+//    }
+//    public void requestPhoneStatePermissionIfNeeded() {
+//        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE_PERMISSION);
+//    }
+//    public int getAudioPermissionRequestCode() {
+//        return REQUEST_RECORD_AUDIO_PERMISSION;
+//    }
+//
+//    public int getPhoneStatePermissionRequestCode() {
+//        return REQUEST_READ_PHONE_STATE_PERMISSION;
+//    }
+//}
+
 package com.example.audioanalysis.Permissions;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.provider.Settings;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-public class PermissionsManager {
+import java.util.ArrayList;
+import java.util.List;
 
-    private final Context context;
+public class PermissionsManager{
     private final Activity activity;
-
-    // Constants to identify permission request results
-    public static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
-    public static final int REQUEST_READ_PHONE_STATE_PERMISSION = 2;
-
-    // Constructor initializes context and activity references
+    private static final int PERMISSION_REQUEST_CODE = 100;
+    private static final String[] REQUIRED_PERMISSIONS = { // Permissions that I use
+            android.Manifest.permission.RECORD_AUDIO,
+            android.Manifest.permission.READ_PHONE_STATE
+    };
     public PermissionsManager(Activity activity) {
-        this.context = activity.getApplicationContext();
         this.activity = activity;
     }
 
-    /**
-     * Check both audio and phone state permissions during app initialization.
-     * If permissions are not granted, request them.
-     */
 
-    public void checkAllPermissions() {
-        boolean audioPermissionGranted = isPermissionGranted(android.Manifest.permission.RECORD_AUDIO);
-        boolean phonePermissionGranted = isPermissionGranted(android.Manifest.permission.READ_PHONE_STATE);
-
-        if (!audioPermissionGranted) {
-            requestAudioPermission(); // Request audio permission if not granted
+    public List<String> getMissingPermissions() { // Check for missing permissions
+        List<String> missingPermissions = new ArrayList<>(); // Created a arraylist for storing missing permissions
+        for (String permission : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+                missingPermissions.add(permission); // add those missing permissions
+            }
         }
-
-        if (!phonePermissionGranted) {
-            requestPhoneStatePermission(); // Request phone state permission if not granted
-        }
+        return missingPermissions;
     }
 
-    /**
-     * Request permission to record audio.
-     */
-    private void requestAudioPermission() {
-        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
-    }
+    public void requestPermissions() { // Check if there any missing permissions and request them
+        List<String> missingPermissions = getMissingPermissions();
 
-    /**
-     * Request permission to read phone state.
-     */
-    private void requestPhoneStatePermission() {
-        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE_PERMISSION);
-    }
-
-    /**
-     * Checks if a specific permission is granted.
-     *
-     * @param permission The permission to check.
-     * @return true if the permission is granted, false otherwise.
-     */
-    private boolean isPermissionGranted(String permission) {
-        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    /**
-     * Handle the result of permission requests.
-     *
-     * @param requestCode  The request code identifying the permission request.
-     * @param permissions  The requested permissions.
-     * @param grantResults The results for the requested permissions.
-     */
-    public void handlePermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (grantResults.length == 0) {
-            // Handle case where the permission dialog was dismissed without granting permission
-            return;
-        }
-
-        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
-            handleAudioPermissionResult(grantResults);
-        } else if (requestCode == REQUEST_READ_PHONE_STATE_PERMISSION) {
-            handlePhoneStatePermissionResult(grantResults);
+        if (!missingPermissions.isEmpty()) {
+            // Request the missing permissions
+            ActivityCompat.requestPermissions(
+                    activity,
+                    missingPermissions.toArray(new String[0]),
+                    PERMISSION_REQUEST_CODE
+            );
         }
     }
 
-    /**
-     * Handle the result of the audio permission request.
-     *
-     * @param grantResults The result of the audio permission request.
-     */
-    private void handleAudioPermissionResult(int[] grantResults) {
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Permission granted
-            Toast.makeText(context, "Audio Permission Granted!", Toast.LENGTH_SHORT).show();
-        } else {
-            // Permission denied, possibly with "Don't ask again"
-            handlePermissionDenial(android.Manifest.permission.RECORD_AUDIO, "Microphone access is required to record audio. Please enable it in settings.");
+    // Handling permissiong result: first check if all granted or not, and if not granted: call showPermissionDeniedMessage() which redirects to settings
+    public void handlePermissionResult(int requestCode, int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            boolean allPermissionsGranted = true;
+
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allPermissionsGranted = false;
+                    break;
+                }
+            }
+
+            if (!allPermissionsGranted) {
+                // Permissions were denied; show a prompt for settings later
+                showPermissionDeniedMessage();
+            }
         }
     }
 
-    /**
-     * Handle the result of the phone state permission request.
-     *
-     * @param grantResults The result of the phone state permission request.
-     */
-    private void handlePhoneStatePermissionResult(int[] grantResults) {
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Permission granted
-            Toast.makeText(context, "Phone State Permission Granted!", Toast.LENGTH_SHORT).show();
-        } else {
-            // Permission denied, possibly with "Don't ask again"
-            handlePermissionDenial(android.Manifest.permission.READ_PHONE_STATE, "Phone state permission is required to detect calls. Please enable it in settings.");
-        }
-    }
-
-    /**
-     * Handle permission denial, including the case when the user selects "Don't ask again".
-     *
-     * @param permission The denied permission.
-     * @param message    The message to show the user if the permission is permanently denied.
-     */
-    private void handlePermissionDenial(String permission, String message) {
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-            // User selected "Don't ask again"—show dialog to redirect to app settings
-            showPermissionDeniedDialog(message);
-        } else {
-            // Show a simple toast when permission is denied without "Don't ask again"
-            Toast.makeText(context, "Permission Denied!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /**
-     * Show a dialog directing the user to app settings if they denied the permission with "Don't ask again".
-     *
-     * @param message The message to show in the dialog.
-     */
-    private void showPermissionDeniedDialog(String message) {
-        new AlertDialog.Builder(activity)
-                .setTitle("Permission Required")
-                .setMessage(message)
-                .setPositiveButton("Open Settings", (dialog, which) -> {
-                    // Open the app settings screen to allow the user to manually grant permission
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.parse("package:" + context.getPackageName()));
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
-                })
+    private void showPermissionDeniedMessage() {
+        new android.app.AlertDialog.Builder(activity)
+                .setTitle("Permissions Required")
+                .setMessage("Some required permissions were denied. Please enable them in app settings.")
+                .setPositiveButton("Go to Settings", (dialog, which) -> openAppSettings())
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
                 .show();
     }
+
+    private void openAppSettings() {
+        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+        intent.setData(uri);
+        activity.startActivity(intent);
+    }
+
 }
